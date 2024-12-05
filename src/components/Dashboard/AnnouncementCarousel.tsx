@@ -13,6 +13,7 @@ import {
   Button,
   TextField,
   useTheme,
+  Modal,
 } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -33,6 +34,22 @@ interface Announcement {
   createdBy: string;
 }
 
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  maxWidth: '90vw',
+  maxHeight: '90vh',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 2,
+  outline: 'none',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center'
+};
+
 const AnnouncementCarousel: React.FC<AnnouncementCarouselProps> = ({ refreshTrigger = 0 }) => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,6 +59,8 @@ const AnnouncementCarousel: React.FC<AnnouncementCarouselProps> = ({ refreshTrig
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
   const [editId, setEditId] = useState<string | null>(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
   const theme = useTheme();
 
   const fetchAnnouncements = async () => {
@@ -149,6 +168,16 @@ const AnnouncementCarousel: React.FC<AnnouncementCarouselProps> = ({ refreshTrig
     }
   };
 
+  const handleViewMedia = (mediaUrl: string) => {
+    setSelectedMedia(`${endpoints.mediaBaseUrl}${mediaUrl}`);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedMedia(null);
+  };
+
   if (loading) {
     return <Box>Loading...</Box>;
   }
@@ -164,144 +193,193 @@ const AnnouncementCarousel: React.FC<AnnouncementCarouselProps> = ({ refreshTrig
   const currentAnnouncement = announcements[currentIndex];
 
   return (
-    <Box sx={{ position: 'relative', width: '100%', height: '500px' }}>
-      <Card sx={{ height: '100%' }}>
-        {currentAnnouncement.mediaUrl && (
-          <CardMedia
-            component="img"
-            image={`${endpoints.mediaBaseUrl}${currentAnnouncement.mediaUrl}`}
-            alt={currentAnnouncement.title}
-            sx={{ 
-              height: '70%',
-              objectFit: 'contain',
-              backgroundColor: 'black'
-            }}
-          />
-        )}
-        <CardContent>
-          <Typography variant="h5" gutterBottom>
-            {currentAnnouncement.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {currentAnnouncement.content}
-          </Typography>
-        </CardContent>
-      </Card>
-
-      {/* Navigation Arrows */}
-      <IconButton
-        sx={{
-          position: 'absolute',
-          left: 8,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          bgcolor: 'rgba(255, 255, 255, 0.8)',
-          '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
-        }}
-        onClick={handlePrevious}
-      >
-        <NavigateBeforeIcon />
-      </IconButton>
-
-      <IconButton
-        sx={{
-          position: 'absolute',
-          right: 8,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          bgcolor: 'rgba(255, 255, 255, 0.8)',
-          '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
-        }}
-        onClick={handleNext}
-      >
-        <NavigateNextIcon />
-      </IconButton>
-
-      {/* Navigation Dots */}
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 16,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          gap: 1,
+    <>
+      <Typography 
+        variant="h4" 
+        sx={{ 
+          mb: 2, 
+          fontWeight: 'medium',
+          color: '#333'
         }}
       >
-        {announcements.map((_, index) => (
-          <Box
-            key={index}
-            onClick={() => handleDotClick(index)}
-            sx={{
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              bgcolor: index === currentIndex ? theme.palette.primary.main : 'rgba(255, 255, 255, 0.5)',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s',
-              '&:hover': {
-                bgcolor: index === currentIndex ? theme.palette.primary.main : 'rgba(255, 255, 255, 0.8)',
-              },
-            }}
-          />
-        ))}
-      </Box>
+        Announcements
+      </Typography>
+      <Box sx={{ position: 'relative', width: '100%', height: '500px' }}>
+        <Card sx={{ height: '100%' }}>
+          {currentAnnouncement.mediaUrl && (
+            <Box sx={{ position: 'relative', height: '300px' }}>
+              <CardMedia
+                component="img"
+                image={`${endpoints.mediaBaseUrl}${currentAnnouncement.mediaUrl}`}
+                alt={currentAnnouncement.title}
+                sx={{ 
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  backgroundColor: 'black',
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleViewMedia(currentAnnouncement.mediaUrl!)}
+              />
+            </Box>
+          )}
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              {currentAnnouncement.title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {currentAnnouncement.content}
+            </Typography>
+          </CardContent>
+        </Card>
 
-      {/* Edit/Delete buttons */}
-      <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 1 }}>
+        {/* Navigation Arrows */}
         <IconButton
-          onClick={() => {
-            setEditId(currentAnnouncement._id);
-            setEditTitle(currentAnnouncement.title);
-            setEditContent(currentAnnouncement.content);
-            setEditDialogOpen(true);
+          sx={{
+            position: 'absolute',
+            left: 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            bgcolor: 'rgba(255, 255, 255, 0.8)',
+            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
           }}
-          sx={{ bgcolor: 'rgba(255, 255, 255, 0.8)' }}
+          onClick={handlePrevious}
         >
-          <EditIcon />
+          <NavigateBeforeIcon />
         </IconButton>
-        <IconButton
-          onClick={() => {
-            if (window.confirm('Are you sure you want to delete this announcement?')) {
-              handleDelete(currentAnnouncement._id);
-            }
-          }}
-          sx={{ bgcolor: 'rgba(255, 255, 255, 0.8)' }}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Box>
 
-      {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-        <DialogTitle>Edit Announcement</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Title"
-            fullWidth
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Content"
-            fullWidth
-            multiline
-            rows={4}
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSaveEdit} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+        <IconButton
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            bgcolor: 'rgba(255, 255, 255, 0.8)',
+            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
+          }}
+          onClick={handleNext}
+        >
+          <NavigateNextIcon />
+        </IconButton>
+
+        {/* Navigation Dots */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 16,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            gap: 1,
+          }}
+        >
+          {announcements.map((_, index) => (
+            <Box
+              key={index}
+              onClick={() => handleDotClick(index)}
+              sx={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
+                bgcolor: index === currentIndex ? theme.palette.primary.main : 'rgba(255, 255, 255, 0.5)',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s',
+                '&:hover': {
+                  bgcolor: index === currentIndex ? theme.palette.primary.main : 'rgba(255, 255, 255, 0.8)',
+                },
+              }}
+            />
+          ))}
+        </Box>
+
+        {/* Edit/Delete buttons */}
+        <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 1 }}>
+          <IconButton
+            onClick={() => {
+              setEditId(currentAnnouncement._id);
+              setEditTitle(currentAnnouncement.title);
+              setEditContent(currentAnnouncement.content);
+              setEditDialogOpen(true);
+            }}
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.8)' }}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              if (window.confirm('Are you sure you want to delete this announcement?')) {
+                handleDelete(currentAnnouncement._id);
+              }
+            }}
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.8)' }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+
+        {/* Edit Dialog */}
+        <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
+          <DialogTitle>Edit Announcement</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Title"
+              fullWidth
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+            />
+            <TextField
+              margin="dense"
+              label="Content"
+              fullWidth
+              multiline
+              rows={4}
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveEdit} color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Media Modal */}
+        <Modal
+          open={openModal}
+          onClose={handleCloseModal}
+          aria-labelledby="view-media-modal"
+        >
+          <Box sx={{
+            position: 'absolute' as 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            maxWidth: '90vw',
+            maxHeight: '90vh',
+            bgcolor: 'black',
+            boxShadow: 24,
+            p: 2,
+            outline: 'none',
+          }}>
+            {selectedMedia && (
+              <img
+                src={selectedMedia}
+                alt="Announcement media"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '90vh',
+                  objectFit: 'contain'
+                }}
+              />
+            )}
+          </Box>
+        </Modal>
+      </Box>
+    </>
   );
 };
 

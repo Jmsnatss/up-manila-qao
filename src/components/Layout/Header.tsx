@@ -108,20 +108,21 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ bgcolor: '#8B0000' }}>
+    <AppBar position="static" sx={{ bgcolor: '#7b1113' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box
-            component="img"
-            src="/images/dash_logo.png"
-            alt="QAO Logo"
-            sx={{
-              height: 40,
-              mr: 2,
-              cursor: 'pointer',
-            }}
-            onClick={() => navigate('/dashboard')}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <img
+              src="/images/dash_logo.png"
+              alt="Logo"
+              style={{
+                height: '65px',
+                marginRight: '1rem',
+                marginBottom: '0.5rem',
+                marginTop: '0.25rem',
+              }}
+            />
+          </Box>
           <Box sx={{ flexGrow: 1 }} />
           {renderNavButtons()}
         </Toolbar>

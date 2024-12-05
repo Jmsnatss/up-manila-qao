@@ -9,6 +9,7 @@ const FooterContainer = styled(Box)(({ theme }) => ({
   color: 'white',
   padding: theme.spacing(6, 0),
   marginTop: 'auto',
+  position: 'relative',
 }));
 
 const FooterLink = styled(Link)({
@@ -35,6 +36,7 @@ const Footer = () => {
     <FooterContainer>
       <Container maxWidth="lg">
         <Grid container spacing={4}>
+          {/* Logo and Contact Info */}
           <Grid item xs={12} md={4}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <img 
@@ -44,23 +46,24 @@ const Footer = () => {
               />
             </Box>
             <Typography variant="body2" sx={{ mb: 2 }}>
-              4th Floor, 411-412. National Engineering Center, University of the Philippines, Diliman.
+             Padre Faura St, Ermita, Manila, 1000 Metro Manila
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              qa.upd@up.edu.ph
+              qao.upm@up.edu.ph
             </Typography>
             <Typography variant="body2">
-              (02) 9891-8500 local 2092
+              (02) Contact Number
             </Typography>
           </Grid>
 
+          {/* Useful Links */}
           <Grid item xs={12} md={4}>
             <Typography variant="h6" sx={{ mb: 2, color: '#FFB81C' }}>
               Userful Links
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <FooterLink href="https://up.edu.ph/">UP System</FooterLink>
-              <FooterLink href="https://upd.edu.ph/">UP Diliman</FooterLink>
+              <FooterLink href="https://upd.edu.ph/">UP Manila</FooterLink>
               <FooterLink href="#">Office of the Chancellor</FooterLink>
               <FooterLink href="#">Office of the Registrar</FooterLink>
               <FooterLink href="#">Academic Affairs</FooterLink>
@@ -70,6 +73,7 @@ const Footer = () => {
             </Box>
           </Grid>
 
+          {/* Sitemap and Social Icons */}
           <Grid item xs={12} md={4}>
             <Typography variant="h6" sx={{ mb: 2, color: '#FFB81C' }}>
               Sitemap
@@ -97,6 +101,31 @@ const Footer = () => {
           </Grid>
         </Grid>
       </Container>
+
+      {/* SEAL Image - Positioned absolutely */}
+      <Box
+        sx={{
+          position: 'absolute',
+          right: { xs: '50%', md: '180px' },
+          bottom: '125px',
+          transform: { xs: 'translateX(50%)', md: 'none' },
+          width: '180px',
+          height: '180px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <img 
+          src="/images/SEAL.png" 
+          alt="DPO/DPS Seal" 
+          style={{ 
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain'
+          }}
+        />
+      </Box>
     </FooterContainer>
   );
 };

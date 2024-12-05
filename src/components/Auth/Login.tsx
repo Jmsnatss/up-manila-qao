@@ -35,7 +35,6 @@ const HeaderLogoContainer = styled(Box)(({ theme }) => ({
   left: '20px',
   display: 'flex',
   alignItems: 'center',
-  gap: '10px',
   padding: '8px 16px',
   background: 'rgba(255, 255, 255, 0.9)',
   borderRadius: '8px',
@@ -47,19 +46,11 @@ const HeaderLogoContainer = styled(Box)(({ theme }) => ({
 }));
 
 const HeaderLogo = styled('img')(({ theme }) => ({
-  height: '75%',
-  width: '75%',
+  height: '75px',
+  width: 'auto',
+  objectFit: 'contain',
   [theme.breakpoints.down('sm')]: {
-    height: '30px',
-  },
-}));
-
-const HeaderTitle = styled(Typography)(({ theme }) => ({
-  color: '#8B0000',
-  fontWeight: 600,
-  fontSize: '1.2rem',
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '1rem',
+    height: '50px',
   },
 }));
 
@@ -234,13 +225,6 @@ const Login = () => {
       
       <LoginCard elevation={3}>
         <Logo src="/images/Logo.png" alt="QAO Logo" />
-        <Typography variant="h5" component="h1" sx={{ 
-          fontWeight: 600, 
-          color: '#333',
-          marginBottom: '4px'
-        }}>
-          Quality Assurance Office
-        </Typography>
         <Typography variant="h6" sx={{ 
           fontWeight: 500, 
           color: '#444',
