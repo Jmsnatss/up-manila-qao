@@ -18,21 +18,45 @@ interface News {
   createdAt: string;
 }
 
-const NewsSection = () => {
+interface NewsSectionProps {
+  refreshTrigger?: number;
+}
+
+const NewsSection: React.FC<NewsSectionProps> = ({ refreshTrigger = 0 }) => {
   const [news, setNews] = useState<News[]>([]);
+  const [error, setError] = useState<string>('');
+
+  const fetchNews = async () => {
+    try {
+      const data = await fetchApi(`${endpoints.announcements}?category=news`);
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid data format received from server');
+      }
+      setNews(data);
+      setError('');
+    } catch (error) {
+      console.error('Error fetching news:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load news');
+    }
+  };
 
   useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const data = await fetchApi(`${endpoints.announcements}?category=news`);
-        setNews(data);
-      } catch (error) {
-        console.error('Error fetching news:', error);
-      }
-    };
-
     fetchNews();
-  }, []);
+  }, [refreshTrigger]); // Refresh when trigger changes
+
+  useEffect(() => {
+    // Auto-refresh news every 5 minutes
+    const interval = setInterval(fetchNews, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []); // Keep this separate for auto-refresh
+
+  if (error) {
+    return (
+      <Box>
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -73,6 +97,11 @@ const NewsSection = () => {
             {index < news.length - 1 && <Divider component="li" />}
           </React.Fragment>
         ))}
+        {news.length === 0 && (
+          <ListItem>
+            <ListItemText primary="No news available" />
+          </ListItem>
+        )}
       </List>
     </Box>
   );

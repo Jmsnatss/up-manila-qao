@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
-  Typography,
-  IconButton,
-  CircularProgress,
-  Alert,
   Card,
   CardContent,
   CardMedia,
-  CardActions,
-  Button,
-  useTheme,
+  Typography,
+  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  Button,
   TextField,
+  useTheme,
 } from '@mui/material';
-import {
-  KeyboardArrowLeft,
-  KeyboardArrowRight,
-  DeleteOutline,
-  Edit,
-} from '@mui/icons-material';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { endpoints, getToken, fetchApi } from '../../services/api';
+
+interface AnnouncementCarouselProps {
+  refreshTrigger?: number;
+}
 
 interface Announcement {
   _id: string;
@@ -34,7 +33,7 @@ interface Announcement {
   createdBy: string;
 }
 
-const AnnouncementCarousel: React.FC = () => {
+const AnnouncementCarousel: React.FC<AnnouncementCarouselProps> = ({ refreshTrigger = 0 }) => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -49,12 +48,9 @@ const AnnouncementCarousel: React.FC = () => {
     try {
       setLoading(true);
       const data = await fetchApi(endpoints.announcements);
-      console.log('Fetched announcements:', data);
-      
       if (!Array.isArray(data)) {
         throw new Error('Invalid data format received from server');
       }
-
       setAnnouncements(data);
       setError('');
     } catch (error) {
@@ -67,17 +63,29 @@ const AnnouncementCarousel: React.FC = () => {
 
   useEffect(() => {
     fetchAnnouncements();
-    // Refresh announcements every 5 minutes
-    const interval = setInterval(fetchAnnouncements, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [refreshTrigger]);
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % announcements.length);
-  };
+  // Auto-advance carousel
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (announcements.length > 1) {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % announcements.length);
+      }
+    }, 5000); // Change slide every 5 seconds
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + announcements.length) % announcements.length);
+    return () => clearInterval(timer);
+  }, [announcements.length]);
+
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % announcements.length);
+  }, [announcements.length]);
+
+  const handlePrevious = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + announcements.length) % announcements.length);
+  }, [announcements.length]);
+
+  const handleDotClick = (index: number) => {
+    setCurrentIndex(index);
   };
 
   const handleDelete = async (id: string) => {
@@ -142,158 +150,129 @@ const AnnouncementCarousel: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <Box>Loading...</Box>;
   }
 
   if (error) {
-    return (
-      <Alert 
-        severity="error" 
-        sx={{ mb: 2 }}
-        action={
-          <Button color="inherit" size="small" onClick={fetchAnnouncements}>
-            Retry
-          </Button>
-        }
-      >
-        {error}
-      </Alert>
-    );
+    return <Box color="error.main">{error}</Box>;
   }
 
   if (announcements.length === 0) {
-    return (
-      <Card sx={{ minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography variant="body1" color="textSecondary">
-          No announcements available
-        </Typography>
-      </Card>
-    );
+    return <Box>No announcements available</Box>;
   }
 
   const currentAnnouncement = announcements[currentIndex];
-  const mediaUrl = currentAnnouncement.mediaUrl?.startsWith('http') 
-    ? currentAnnouncement.mediaUrl 
-    : `http://localhost:5001${currentAnnouncement.mediaUrl}`;
 
   return (
-    <Box sx={{ mb: 4 }}>
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        mb: 2,
-        borderBottom: 1,
-        borderColor: 'divider',
-        pb: 1
-      }}>
-        <Typography variant="h4" component="h2" sx={{ fontWeight: 500 }}>
-          Announcements
-        </Typography>
-      </Box>
-
-      <Card sx={{ position: 'relative', minHeight: 400 }}>
-        {mediaUrl && (
-          <>
-            {mediaUrl.match(/\.(mp4)$/i) ? (
-              <Box sx={{ 
-                height: 300, 
-                bgcolor: 'black', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                '& video': {
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  objectFit: 'contain'
-                }
-              }}>
-                <video
-                  key={mediaUrl}
-                  src={mediaUrl}
-                  controls
-                />
-              </Box>
-            ) : mediaUrl.match(/\.(jpg|jpeg|png|gif)$/i) ? (
-              <CardMedia
-                component="img"
-                image={mediaUrl}
-                alt={currentAnnouncement.title}
-                sx={{
-                  height: 300,
-                  objectFit: 'contain',
-                  bgcolor: 'black',
-                }}
-              />
-            ) : null}
-          </>
+    <Box sx={{ position: 'relative', width: '100%', height: '500px' }}>
+      <Card sx={{ height: '100%' }}>
+        {currentAnnouncement.mediaUrl && (
+          <CardMedia
+            component="img"
+            image={`${endpoints.mediaBaseUrl}${currentAnnouncement.mediaUrl}`}
+            alt={currentAnnouncement.title}
+            sx={{ 
+              height: '70%',
+              objectFit: 'contain',
+              backgroundColor: 'black'
+            }}
+          />
         )}
-
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h5" gutterBottom>
             {currentAnnouncement.title}
           </Typography>
-
-          <Typography variant="body1" paragraph>
+          <Typography variant="body2" color="text.secondary">
             {currentAnnouncement.content}
           </Typography>
-
-          <Typography variant="caption" color="textSecondary">
-            Posted on: {new Date(currentAnnouncement.createdAt).toLocaleDateString()}
-          </Typography>
         </CardContent>
-
-        <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
-          <Box>
-            <IconButton 
-              onClick={() => handleDelete(currentAnnouncement._id)}
-              color="error"
-              size="small"
-            >
-              <DeleteOutline />
-            </IconButton>
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={() => handleEdit(currentAnnouncement)}
-            >
-              <Edit />
-            </IconButton>
-          </Box>
-
-          {announcements.length > 1 && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <IconButton onClick={handlePrev} size="small">
-                <KeyboardArrowLeft />
-              </IconButton>
-              <Typography variant="body2" color="textSecondary">
-                {currentIndex + 1} of {announcements.length}
-              </Typography>
-              <IconButton onClick={handleNext} size="small">
-                <KeyboardArrowRight />
-              </IconButton>
-            </Box>
-          )}
-        </CardActions>
-
-        {mediaUrl?.match(/\.pdf$/i) && (
-          <Box sx={{ p: 2, textAlign: 'center' }}>
-            <Button
-              variant="contained"
-              href={mediaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View PDF
-            </Button>
-          </Box>
-        )}
       </Card>
 
+      {/* Navigation Arrows */}
+      <IconButton
+        sx={{
+          position: 'absolute',
+          left: 8,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          bgcolor: 'rgba(255, 255, 255, 0.8)',
+          '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
+        }}
+        onClick={handlePrevious}
+      >
+        <NavigateBeforeIcon />
+      </IconButton>
+
+      <IconButton
+        sx={{
+          position: 'absolute',
+          right: 8,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          bgcolor: 'rgba(255, 255, 255, 0.8)',
+          '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
+        }}
+        onClick={handleNext}
+      >
+        <NavigateNextIcon />
+      </IconButton>
+
+      {/* Navigation Dots */}
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 16,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: 1,
+        }}
+      >
+        {announcements.map((_, index) => (
+          <Box
+            key={index}
+            onClick={() => handleDotClick(index)}
+            sx={{
+              width: 12,
+              height: 12,
+              borderRadius: '50%',
+              bgcolor: index === currentIndex ? theme.palette.primary.main : 'rgba(255, 255, 255, 0.5)',
+              cursor: 'pointer',
+              transition: 'background-color 0.3s',
+              '&:hover': {
+                bgcolor: index === currentIndex ? theme.palette.primary.main : 'rgba(255, 255, 255, 0.8)',
+              },
+            }}
+          />
+        ))}
+      </Box>
+
+      {/* Edit/Delete buttons */}
+      <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 1 }}>
+        <IconButton
+          onClick={() => {
+            setEditId(currentAnnouncement._id);
+            setEditTitle(currentAnnouncement.title);
+            setEditContent(currentAnnouncement.content);
+            setEditDialogOpen(true);
+          }}
+          sx={{ bgcolor: 'rgba(255, 255, 255, 0.8)' }}
+        >
+          <EditIcon />
+        </IconButton>
+        <IconButton
+          onClick={() => {
+            if (window.confirm('Are you sure you want to delete this announcement?')) {
+              handleDelete(currentAnnouncement._id);
+            }
+          }}
+          sx={{ bgcolor: 'rgba(255, 255, 255, 0.8)' }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Box>
+
+      {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
         <DialogTitle>Edit Announcement</DialogTitle>
         <DialogContent>
@@ -301,7 +280,6 @@ const AnnouncementCarousel: React.FC = () => {
             autoFocus
             margin="dense"
             label="Title"
-            type="text"
             fullWidth
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
@@ -309,7 +287,6 @@ const AnnouncementCarousel: React.FC = () => {
           <TextField
             margin="dense"
             label="Content"
-            type="text"
             fullWidth
             multiline
             rows={4}
@@ -319,7 +296,9 @@ const AnnouncementCarousel: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSaveEdit} color="primary">Save</Button>
+          <Button onClick={handleSaveEdit} color="primary">
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

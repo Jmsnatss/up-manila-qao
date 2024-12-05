@@ -1,10 +1,12 @@
 export const API_BASE_URL = 'http://localhost:5001/api';
+export const MEDIA_BASE_URL = 'http://localhost:5001';
 
 export const endpoints = {
   login: `${API_BASE_URL}/auth/login`,
   register: `${API_BASE_URL}/auth/register`,
   verify: `${API_BASE_URL}/auth/verify`,
   announcements: `${API_BASE_URL}/announcements`,
+  mediaBaseUrl: MEDIA_BASE_URL,
 };
 
 export const getToken = () => {

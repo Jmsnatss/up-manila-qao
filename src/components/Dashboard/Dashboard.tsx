@@ -7,6 +7,12 @@ import Footer from '../Layout/Footer';
 
 const Dashboard = () => {
   const [showUpload, setShowUpload] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleUploadSuccess = () => {
+    setShowUpload(false);
+    setRefreshTrigger(prev => prev + 1); // Increment to trigger refresh
+  };
 
   return (
     <Box sx={{ 
@@ -28,19 +34,16 @@ const Dashboard = () => {
             </Box>
             {showUpload && (
               <AnnouncementUpload 
-                onUploadSuccess={() => {
-                  setShowUpload(false);
-                  // The carousel will automatically refresh due to its useEffect
-                }}
+                onUploadSuccess={handleUploadSuccess}
               />
             )}
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-              <AnnouncementCarousel />
+              <AnnouncementCarousel refreshTrigger={refreshTrigger} />
             </Paper>
           </Grid>
           <Grid item xs={12}>
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-              <NewsSection />
+              <NewsSection refreshTrigger={refreshTrigger} />
             </Paper>
           </Grid>
         </Grid>
