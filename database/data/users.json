@@ -1,0 +1,20 @@
+[
+  {
+    "_id": "675116d36ef6cfd33d0c545e",
+    "email": "test@example.com",
+    "password": "$2a$10$pv/fSnfoe0/uC05ygTCMYetD03.u3KpVoSei9CdZR.uKunZlPvjEG",
+    "role": "user",
+    "createdAt": "2024-12-05T02:58:27.248Z",
+    "updatedAt": "2024-12-05T02:58:27.248Z",
+    "__v": 0
+  },
+  {
+    "_id": "67511bbd85f600a39831e759",
+    "email": "admin@upmanila.edu",
+    "password": "$2a$10$1S1GO7KKI6OfT/suF6ydce1yE1TsFf6y9V8GP4DGETVzQyleCwFVi",
+    "role": "user",
+    "createdAt": "2024-12-05T03:19:25.872Z",
+    "updatedAt": "2024-12-05T03:19:25.872Z",
+    "__v": 0
+  }
+]

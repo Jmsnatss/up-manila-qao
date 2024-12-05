@@ -1,0 +1,46 @@
+[
+  {
+    "_id": "675159703fc7bdfae4dc7086",
+    "title": "Testing",
+    "content": "trying",
+    "mediaUrl": "/uploads/announcements/1733384560336-106631723.png",
+    "active": true,
+    "createdBy": "67511bbd85f600a39831e759",
+    "createdAt": "2024-12-05T07:42:40.338Z",
+    "updatedAt": "2024-12-05T07:49:15.896Z",
+    "__v": 0
+  },
+  {
+    "_id": "67515c1f3fc7bdfae4dc70c1",
+    "title": "2nd announcement",
+    "content": "Trying to move",
+    "mediaUrl": "/uploads/announcements/1733385247968-843879930.png",
+    "active": true,
+    "createdBy": "67511bbd85f600a39831e759",
+    "createdAt": "2024-12-05T07:54:07.970Z",
+    "updatedAt": "2024-12-05T07:54:07.970Z",
+    "__v": 0
+  },
+  {
+    "_id": "675184043fc7bdfae4dc70f9",
+    "title": "Amazing",
+    "content": "Content",
+    "mediaUrl": "/uploads/announcements/1733395460914-172944051.gif",
+    "active": true,
+    "createdBy": "67511bbd85f600a39831e759",
+    "createdAt": "2024-12-05T10:44:20.921Z",
+    "updatedAt": "2024-12-05T10:44:20.921Z",
+    "__v": 0
+  },
+  {
+    "_id": "6751b94c3fc7bdfae4dc7158",
+    "title": "New School Announcement",
+    "content": "Academic Year 2024-2025 1st Semester will end by December 18, 2024",
+    "mediaUrl": "/uploads/announcements/1733409100457-728897137.png",
+    "active": true,
+    "createdBy": "67511bbd85f600a39831e759",
+    "createdAt": "2024-12-05T14:31:40.479Z",
+    "updatedAt": "2024-12-05T14:31:40.479Z",
+    "__v": 0
+  }
+]
