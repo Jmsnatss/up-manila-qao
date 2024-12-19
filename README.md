@@ -1,46 +1,118 @@
-# Getting Started with Create React App
+# UP Manila QAO (Quality Assurance Office) System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A web-based application designed for the UP Manila Quality Assurance Office to streamline their operations and enhance service delivery.
 
-## Available Scripts
+## Project Overview
 
-In the project directory, you can run:
+This project consists of a React-based frontend and Node.js/Express backend with MongoDB as the database. It provides features for managing announcements, user authentication, and file uploads.
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Before running this application, make sure you have the following installed:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- [Node.js](https://nodejs.org/) (version 14.0 or higher)
+- [MongoDB](https://www.mongodb.com/try/download/community) (version 4.0 or higher)
+- npm (comes with Node.js)
 
-### `npm test`
+## Installation and Setup
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd up-manila-qao
+```
 
-### `npm run build`
+### 2. Backend Setup
+```bash
+# Navigate to backend directory
+cd backend
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Install dependencies
+npm install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Create .env file with the following content:
+MONGODB_URI=mongodb://localhost:27017/up-manila-qao
+JWT_SECRET=your_jwt_secret
+PORT=5001
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 3. Frontend Setup
+```bash
+# Navigate back to root directory
+cd ..
 
-### `npm run eject`
+# Install frontend dependencies
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Running the Application
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 1. Start MongoDB
+Make sure MongoDB is running on your system:
+- Windows: MongoDB should be running as a service
+- Linux/Mac: Run `mongod` in a terminal
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 2. Start the Backend Server
+```bash
+# In the backend directory
+cd backend
+npm start
+```
+The backend server will start on port 5001.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 3. Start the Frontend Development Server
+```bash
+# In the root directory
+npm start
+```
+The frontend development server will start on port 3000.
 
-## Learn More
+## Accessing the Application
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- Backend API: [http://localhost:5001](http://localhost:5001)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Project Structure
+
+```
+up-manila-qao/
+├── backend/                # Backend server code
+│   ├── config/            # Configuration files
+│   ├── controllers/       # Request handlers
+│   ├── middleware/        # Custom middleware
+│   ├── models/           # Database models
+│   ├── routes/           # API routes
+│   └── server.js         # Server entry point
+├── public/               # Static files
+├── src/                  # Frontend source code
+│   ├── components/       # React components
+│   ├── pages/           # Page components
+│   ├── services/        # API services
+│   └── App.tsx          # Root component
+└── package.json         # Project dependencies
+```
+
+## Features
+
+- User Authentication (Login/Register)
+- Announcement Management
+- File Upload System
+- Responsive UI Design
+- Secure API Endpoints
+- MongoDB Integration
+
+## Technologies Used
+
+### Frontend
+- React
+- TypeScript
+- Material-UI
+- React Router
+- Axios
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- JWT Authentication
+- Multer (for file uploads)
